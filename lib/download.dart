@@ -44,9 +44,9 @@ List<String?> list = [];
         final docu2 = document.getElementsByTagName('article')[0].innerHtml.toString();
         var a = 'img src'.allMatches(docu2).length;
         var b = 'img alt'.allMatches(docu2).length;
+
         
-        
-        if (a>0){
+        if (a>0 || b>0){
          for (int i = 0; i < a; i++) {
            
            final e = docu.map((e) => 
@@ -59,9 +59,7 @@ List<String?> list = [];
               list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
             } 
           }
-          }
-          else {
-           for (int i = 0; i < b; i++){
+          for (int i = 0; i < b; i++){
             final e = docu.map((e) => 
             e.getElementsByTagName("img")[i].attributes['src']).toString();
             if (e.contains('files')) {
@@ -72,29 +70,34 @@ List<String?> list = [];
               list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
             } 
             }
+          }
+          else {
+            print('zero to download');
            }
              
-           
+         print(list);
          list.remove('/static/blank.gif');
          final mappedlist = list.asMap();
              
       
-      if (a>0){
+       if (a>0 || b>0){
              for (int i = 0; i < a; i++) {
              int length =  mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').length;
               
-              downloadfile(mappedlist[i], mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').substring(length-15, length) );
+              downloadfile(mappedlist[i], mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').substring(length - 15, length) );
+
+             for (int i = 0; i < b; i++){
+               int length =  mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').length;
+               
+               downloadfile(mappedlist[i], mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').substring(length-15, length));
+               
+               }  
               
       
               }
               }
               else {
-               for (int i = 0; i < b; i++){
-               int length =  mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').length;
-               
-               downloadfile(mappedlist[i], mappedlist[i]!.replaceAll('https://', '').replaceAll('/', '-').substring(length-15, length));
-               
-               }
+ 
       
               }
         
