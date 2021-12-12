@@ -79,14 +79,17 @@ class _Example_appState extends State<Example_app> {
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: WebView(
-              initialUrl: 'https://www.twicenest.com/board',
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller.complete(webViewController);
-                _controller.future.then((value) =>
-                    _controller = value as Completer<WebViewController>);
-              }),
+          body: SafeArea(
+            top: true,
+            child: WebView(
+                initialUrl: 'https://www.twicenest.com/board',
+                javascriptMode: JavascriptMode.unrestricted,
+                onWebViewCreated: (WebViewController webViewController) {
+                  _controller.complete(webViewController);
+                  _controller.future.then((value) =>
+                      _controller = value as Completer<WebViewController>);
+                }),
+          ),
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
             notchMargin: 4.0,
