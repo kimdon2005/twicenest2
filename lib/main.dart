@@ -131,8 +131,25 @@ class _Example_appState extends State<Example_app> {
         if (controller.hasData) {
           return IconButton(
             onPressed: () async {
-              var url = await controller.data!.currentUrl();
-              makeRequest(url);
+              // var url = await controller.data!.currentUrl();
+              // makeRequest(url);
+              final snackBar = SnackBar(
+                content: const Text(
+                  '컨텐츠를 다운로드 중!!',
+                  style: TextStyle(color: Colors.black54, fontFamily: 'Jua'),
+                ),
+                duration: new Duration(seconds: 1),
+                backgroundColor: Color.fromRGBO(252, 237, 241, 10),
+                elevation: 6.0,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(14)),
+                ),
+              );
+
+              // Find the ScaffoldMessenger in the widget tree
+              // and use it to show a SnackBar.
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
             },
             icon: Icon(Icons.download),
           );
