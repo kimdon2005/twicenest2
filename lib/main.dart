@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -38,7 +37,7 @@ class _Example_appState extends State<Example_app> {
 
   Completer<WebViewController> _controller = Completer<WebViewController>();
 
-  int progress = 0;
+  static int progress = 0;
 
   ReceivePort _receivePort = ReceivePort();
 
@@ -67,7 +66,9 @@ class _Example_appState extends State<Example_app> {
       setState(() {
         progress = message[2];
       });
-
+      if (progress == 100) {
+        signal();
+      }
       print(progress);
     });
 
@@ -131,8 +132,8 @@ class _Example_appState extends State<Example_app> {
         if (controller.hasData) {
           return IconButton(
             onPressed: () async {
-              // var url = await controller.data!.currentUrl();
-              // makeRequest(url);
+              var url = await controller.data!.currentUrl();
+              makeRequest(url);
               final snackBar = SnackBar(
                 content: const Text(
                   '컨텐츠를 다운로드 중!!',
