@@ -6,15 +6,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
-import 'dart:io' show Platform;
 
 List<String?> list = [];
+int sign = 0;
 
 Future<void> downloadfile(___url, filename) async {
   if (Platform.isIOS) {
     final dir = await getApplicationDocumentsDirectory();
     var _localPath = dir.path;
     final savedDir = Directory(_localPath);
+    print(savedDir);
     final status = await Permission.storage.request();
     if (status.isGranted) {
       await savedDir.create(recursive: true).then((value) async {
@@ -22,8 +23,6 @@ Future<void> downloadfile(___url, filename) async {
           url: ___url,
           fileName: filename,
           savedDir: _localPath,
-          showNotification: true,
-          openFileFromNotification: true,
         );
       });
     } else {
@@ -31,9 +30,11 @@ Future<void> downloadfile(___url, filename) async {
     }
 
     //iOS
+
   } else if (Platform.isAndroid) {
     final dir = await getExternalStorageDirectory();
     var _localPath = dir!.path;
+    print(_localPath);
     final savedDir = Directory(_localPath);
     final status = await Permission.storage.request();
     if (status.isGranted) {
@@ -74,8 +75,11 @@ void makeRequest(_url) async {
             .map((e) => e.getElementsByTagName("img")[i].attributes['src'])
             .toString();
 
-        if (e.contains('files')) {
-          String imgurl = 'https://www.twicenest.com' + e;
+        if (e.contains('files/')) {
+          String filename = e.substring(e.lastIndexOf("/") + 1);
+          String imgurl =
+              'https://twicenest-content.koreacentral.cloudapp.azure.com/3/' +
+                  filename;
           list.insert(i, imgurl.replaceAll('(', '').replaceAll(')', ''));
         } else {
           list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
@@ -86,8 +90,11 @@ void makeRequest(_url) async {
         final e = docu
             .map((e) => e.getElementsByTagName("img")[i].attributes['src'])
             .toString();
-        if (e.contains('files')) {
-          String imgurl = 'https://www.twicenest.com' + e;
+        if (e.contains('files/')) {
+          String filename = e.substring(e.lastIndexOf("/") + 1);
+          String imgurl =
+              'https://twicenest-content.koreacentral.cloudapp.azure.com/3/' +
+                  filename;
           list.insert(i, imgurl.replaceAll('(', '').replaceAll(')', ''));
         } else {
           list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
@@ -108,27 +115,37 @@ void makeRequest(_url) async {
         String? imgurl = mappedlist[i];
         if (imgurl != null) {
           int length = imgurl.length;
-
+          sign = 0;
           downloadfile(
               mappedlist[i],
               mappedlist[i]!
                   .replaceAll('https://', '')
                   .replaceAll('/', '-')
                   .substring(length - 15));
+          while (sign == 1) {
+            sleep(const Duration(seconds: 10));
+          }
         } else {
           print('error');
         }
       }
       for (int i = 0; i < altNum; i++) {
         int length = mappedlist[i]!.length;
-
+        sign = 0;
         downloadfile(
             mappedlist[i],
             mappedlist[i]!
                 .replaceAll('https://', '')
                 .replaceAll('/', '-')
                 .substring(length - 15));
+        while (sign == 1) {
+          sleep(const Duration(seconds: 10));
+        }
       }
     } else {}
   }
+}
+
+void signal() {
+  sign = 1;
 }
