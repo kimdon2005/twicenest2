@@ -35,6 +35,7 @@ dependencies:
   html: ^0.15.0
   fluttertoast: ^8.0.8
   permission_handler: ^8.0.0
+  add_to_gallery: ^0.2.0+3
 
 
   

@@ -6,8 +6,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:add_to_gallery/add_to_gallery.dart';
 
 List<String?> list = [];
+List downloadedfile = [];
 int sign = 0;
 
 Future<void> downloadfile(___url, filename) async {
@@ -15,8 +17,8 @@ Future<void> downloadfile(___url, filename) async {
     final dir = await getApplicationDocumentsDirectory();
     var _localPath = dir.path;
     final savedDir = Directory(_localPath);
-    print(savedDir);
     final status = await Permission.storage.request();
+    downloadedfile.add(_localPath + '/' + filename);
     if (status.isGranted) {
       await savedDir.create(recursive: true).then((value) async {
         await FlutterDownloader.enqueue(
@@ -37,6 +39,7 @@ Future<void> downloadfile(___url, filename) async {
     print(_localPath);
     final savedDir = Directory(_localPath);
     final status = await Permission.storage.request();
+    downloadedfile.add(_localPath + '/' + filename);
     if (status.isGranted) {
       await savedDir.create(recursive: true).then((value) async {
         await FlutterDownloader.enqueue(
@@ -115,31 +118,71 @@ void makeRequest(_url) async {
         String? imgurl = mappedlist[i];
         if (imgurl != null) {
           int length = imgurl.length;
-          sign = 0;
-          downloadfile(
-              mappedlist[i],
-              mappedlist[i]!
-                  .replaceAll('https://', '')
-                  .replaceAll('/', '-')
-                  .substring(length - 15));
-          while (sign == 1) {
-            sleep(const Duration(seconds: 10));
+          if ((imgurl.startsWith('https://drive.google.com/')) ==
+              true & (imgurl.contains('.gif') == false)) {
+            sign = 0;
+            String filename = imgurl
+                    .substring(length - 15)
+                    .replaceAll('https://', '')
+                    .replaceAll('/', '') +
+                '.gif';
+            downloadfile(imgurl, filename);
+            print(imgurl);
+            print(filename);
+            print(length);
+            while (sign == 1) {
+              sleep(const Duration(seconds: 10));
+            }
+          } else {
+            sign = 0;
+            String filename = imgurl
+                .substring(length - 15)
+                .replaceAll('https://', '')
+                .replaceAll('/', '');
+            downloadfile(imgurl, filename);
+            print(imgurl);
+            print(filename);
+            print(length);
+            while (sign == 1) {
+              sleep(const Duration(seconds: 10));
+            }
           }
         } else {
           print('error');
         }
       }
       for (int i = 0; i < altNum; i++) {
-        int length = mappedlist[i]!.length;
-        sign = 0;
-        downloadfile(
-            mappedlist[i],
-            mappedlist[i]!
-                .replaceAll('https://', '')
-                .replaceAll('/', '-')
-                .substring(length - 15));
-        while (sign == 1) {
-          sleep(const Duration(seconds: 10));
+        String? lastImgurl = mappedlist[i];
+        int length = lastImgurl!.length;
+
+        if ((lastImgurl.startsWith('https://drive.google.com/')) ==
+            true & (lastImgurl.contains('.gif') == false)) {
+          sign = 0;
+          String filename = lastImgurl
+                  .substring(length - 15)
+                  .replaceAll('https://', '')
+                  .replaceAll('/', '') +
+              '.gif';
+          downloadfile(lastImgurl, filename);
+          print(lastImgurl);
+          print(filename);
+          print(length);
+          while (sign == 1) {
+            sleep(const Duration(seconds: 10));
+          }
+        } else {
+          sign = 0;
+          String filename = lastImgurl
+              .substring(length - 15)
+              .replaceAll('https://', '')
+              .replaceAll('/', '');
+          downloadfile(lastImgurl, filename);
+          print(lastImgurl);
+          print(filename);
+          print(length);
+          while (sign == 1) {
+            sleep(const Duration(seconds: 10));
+          }
         }
       }
     } else {}
@@ -148,4 +191,29 @@ void makeRequest(_url) async {
 
 void signal() {
   sign = 1;
+}
+
+Future<void> savefiletogallery() async {
+  int length = downloadedfile.length;
+  for (int i = 0; i < length; i++) {
+    try {
+      // iOS
+      if (!await Permission.photos.request().isGranted) {
+        throw ('Permission Required');
+      }
+      // Android (10 and below)
+      if (!await Permission.storage.request().isGranted) {
+        throw ('Permission Required');
+      }
+      // Add to the gallery
+      File file = await AddToGallery.addToGallery(
+        originalFile: File(downloadedfile[i]),
+        albumName: '둥닷앱',
+        deleteOriginalFile: true,
+      );
+      print("Savd to gallery with Path: ${file.path}");
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 }

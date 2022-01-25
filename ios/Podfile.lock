@@ -1,4 +1,6 @@
 PODS:
+  - add_to_gallery (0.0.1):
+    - Flutter
   - Flutter (1.0.0)
   - flutter_downloader (0.0.1):
     - Flutter
@@ -14,6 +16,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - add_to_gallery (from `.symlinks/plugins/add_to_gallery/ios`)
   - Flutter (from `Flutter`)
   - flutter_downloader (from `.symlinks/plugins/flutter_downloader/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -26,6 +29,8 @@ SPEC REPOS:
     - Toast
 
 EXTERNAL SOURCES:
+  add_to_gallery:
+    :path: ".symlinks/plugins/add_to_gallery/ios"
   Flutter:
     :path: Flutter
   flutter_downloader:
@@ -40,6 +45,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
+  add_to_gallery: 612edc6fe03925133e8376573dbced920c30fa93
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   flutter_downloader: 058b9c41564a90500f67f3e432e3524613a7fd83
   fluttertoast: 6122fa75143e992b1d3470f61000f591a798cc58
