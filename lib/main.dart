@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'download.dart';
+import 'secondpage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,10 +67,11 @@ class _Example_appState extends State<Example_app> {
       setState(() {
         progress = message[2];
       });
+      print(progress);
       if (progress == 100) {
         signal();
+        signal2();
       }
-      print(progress);
     });
 
     FlutterDownloader.registerCallback(downloadingCallback);
@@ -80,16 +82,19 @@ class _Example_appState extends State<Example_app> {
     return WillPopScope(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
-          body: SafeArea(
-            top: true,
-            child: WebView(
-                initialUrl: 'https://www.twicenest.com/board',
-                javascriptMode: JavascriptMode.unrestricted,
-                onWebViewCreated: (WebViewController webViewController) {
-                  _controller.complete(webViewController);
-                  _controller.future.then((value) =>
-                      _controller = value as Completer<WebViewController>);
-                }),
+          body: Container(
+            color: Color.fromRGBO(248, 247, 245, 10),
+            child: SafeArea(
+              top: true,
+              child: WebView(
+                  initialUrl: 'https://www.twicenest.com/board',
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller.complete(webViewController);
+                    _controller.future.then((value) =>
+                        _controller = value as Completer<WebViewController>);
+                  }),
+            ),
           ),
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
@@ -139,6 +144,9 @@ class _Example_appState extends State<Example_app> {
             onPressed: () async {
               var url = await controller.data!.currentUrl();
               try {
+                // downloadfile(
+                //     'https://www.drive.google.com/uc?export=download&id=1SWQJmyY2KKG22Lax-H0V5Qc5JksASeA9',
+                //     'test.gif');
                 makeRequest(url);
                 final snackBar = SnackBar(
                   content: const Text(
@@ -216,53 +224,5 @@ class _Example_appState extends State<Example_app> {
       icon: Icon(Icons.download_done_rounded),
       tooltip: '다운로드된 파일 보기',
     );
-  }
-}
-
-class Secondpage extends StatelessWidget {
-  const Secondpage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '다운받은 사진',
-          style: TextStyle(color: Colors.black54, fontFamily: 'Jua'),
-        ),
-        backgroundColor: Color.fromRGBO(252, 237, 241, 10),
-      ),
-      body: filelist(),
-      bottomNavigationBar: BottomAppBar(
-          child: IconButton(
-        icon: Icon(Icons.image_rounded),
-        onPressed: () {
-          savefiletogallery();
-          downloadedfile.clear();
-        },
-      )),
-    );
-  }
-
-  Widget filelist() {
-    if (downloadedfile.length == 0) {
-      return Center(
-        child: Text(
-          '다운 받은 파일이 없어요!!',
-          style: TextStyle(color: Colors.black54, fontFamily: 'Jua'),
-        ),
-      );
-    } else {
-      return GridView.count(
-        primary: false,
-        padding: const EdgeInsets.all(20.0),
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
-        crossAxisCount: 2,
-        children: List.generate(downloadedfile.length, (index) {
-          return Center(child: Image.file(File(downloadedfile[index])));
-        }),
-      );
-    }
   }
 }
