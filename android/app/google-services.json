@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "859746332185",
+    "firebase_url": "https://twicenest-909eb-default-rtdb.firebaseio.com",
+    "project_id": "twicenest-909eb",
+    "storage_bucket": "twicenest-909eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859746332185:android:33e7602b347836660fc488",
+        "android_client_info": {
+          "package_name": "ta.kimdon.twicenest2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859746332185-m8lu17jk3161fcp61hrondgk6u8772eq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBu8gVjWhRHebwsdQF1Hk5gcy9Cvqh05U0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859746332185-m8lu17jk3161fcp61hrondgk6u8772eq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

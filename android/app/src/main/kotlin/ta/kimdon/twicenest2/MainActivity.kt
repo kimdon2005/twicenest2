@@ -1,4 +1,4 @@
-package com.example.twicenest2
+package ta.kimdon.twicenest2
 
 import io.flutter.embedding.android.FlutterActivity
 
