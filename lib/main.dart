@@ -5,6 +5,7 @@ import 'dart:ui';
 
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'download.dart';
@@ -20,20 +21,18 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Example_app());
+    return MaterialApp(debugShowCheckedModeBanner: false, home: Twicenest());
   }
 }
 
-// ignore: camel_case_types
-class Example_app extends StatefulWidget {
-  Example_app({Key? key}) : super(key: key);
+class Twicenest extends StatefulWidget {
+  Twicenest({Key? key}) : super(key: key);
 
   @override
-  _Example_appState createState() => _Example_appState();
+  _TwicenestState createState() => _TwicenestState();
 }
 
-// ignore: camel_case_types
-class _Example_appState extends State<Example_app> {
+class _TwicenestState extends State<Twicenest> {
   List<String?> list = [];
 
   Completer<WebViewController> _controller = Completer<WebViewController>();
@@ -54,6 +53,8 @@ class _Example_appState extends State<Example_app> {
   void initState() {
     // ignore: todo
     // TODO: implement initState
+    loadbool().then((value) {});
+
     super.initState();
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
@@ -75,6 +76,16 @@ class _Example_appState extends State<Example_app> {
     });
 
     FlutterDownloader.registerCallback(downloadingCallback);
+  }
+
+  loadbool() async {
+    final pref = await SharedPreferences.getInstance();
+    print(pref.getBool('permisson'));
+    if (pref.getBool('permisson') == true) {
+    } else {
+      WidgetsBinding.instance?.addPostFrameCallback((_) => dialogging(context));
+      pref.setBool('permisson', true);
+    }
   }
 
   @override
@@ -220,6 +231,7 @@ class _Example_appState extends State<Example_app> {
             builder: (BuildContext context) => Secondpage(),
           ),
         );
+        // dialogging(context);
       },
       icon: Icon(Icons.download_done_rounded),
       tooltip: '다운로드된 파일 보기',
