@@ -9,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 import 'package:add_to_gallery/add_to_gallery.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 List downloadedfile = [];
 int sign = 0;
@@ -74,10 +75,19 @@ void makeRequest(_url) async {
   if (response.statusCode == 200) {
     dom.Document document = parser.parse(response.body);
     final docu = document.getElementsByTagName('article');
+    final datedocu = document
+        .getElementsByClassName('date m_no')[0]
+        .innerHtml
+        .toString()
+        .substring(0, 10)
+        .replaceAll('.', '-');
     final docu2 =
         document.getElementsByTagName('article')[0].innerHtml.toString();
     var srcNum = 'src'.allMatches(docu2).length;
-    print('srcnum = $srcNum');
+    final usercol = FirebaseFirestore.instance
+        .collection('filepath')
+        .doc(datedocu)
+        .collection('filepath');
 
     for (int i = 0; i < srcNum; i++) {
       final e = docu
@@ -85,8 +95,12 @@ void makeRequest(_url) async {
           .toString();
 
       if (e.contains('files/')) {
-        String filename = e.substring(e.lastIndexOf("/") + 1);
-        String imgurl = 'https://www.twicenestcontent.tk/1/' + filename;
+        String filename =
+            e.substring(e.lastIndexOf("/") + 1).replaceAll(')', ''); //파일이름 찾기
+        var documentsnapshot =
+            await usercol.doc(filename).get(); // firebase setting
+        String imgurl = 'https://www.twicenestcontent.tk/images/' +
+            documentsnapshot.data()!.values.toString(); //firebase에서 경로 찾고 넣기
         list.insert(i, imgurl.replaceAll('(', '').replaceAll(')', ''));
       } else {
         list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
@@ -106,8 +120,10 @@ void makeRequest(_url) async {
       String? imgurl = list[i];
       if (imgurl != null) {
         int length = imgurl.length;
-        if ((imgurl.startsWith('https://drive.google.com/')) ==
-            true & (imgurl.contains('.gif') == false)) {
+        if (((imgurl.startsWith('https://drive.google.com/')) ==
+                true & (imgurl.contains('.gif') == false)) ||
+            (imgurl.startsWith('https://blogger.googleusercontent.com/')) ==
+                true & (imgurl.contains('.gif') == false)) {
           sign2 = 0;
           String filename = imgurl
                   .substring(length - 15)
