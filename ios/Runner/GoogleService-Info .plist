@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>859746332185-vtibvdbq2l7hnul117a8ah7u6c8rqvlu.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.859746332185-vtibvdbq2l7hnul117a8ah7u6c8rqvlu</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBRxBWhJnOQXzagzJUo4B9wQ4tC6MSfCOQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>859746332185</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.kimdon.twicenest2</string>
+	<key>PROJECT_ID</key>
+	<string>twicenest-909eb</string>
+	<key>STORAGE_BUCKET</key>
+	<string>twicenest-909eb.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:859746332185:ios:a2b834c6d5fa641c0fc488</string>
+	<key>DATABASE_URL</key>
+	<string>https://twicenest-909eb-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

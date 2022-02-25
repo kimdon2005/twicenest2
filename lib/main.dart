@@ -12,12 +12,20 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'download.dart';
 import 'first_terms.dart';
 import 'secondpage.dart';
+import 'notification.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+  print('Handling a background message ${message.messageId}');
+}
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   await Firebase.initializeApp();
-
   runApp(MyApp());
 }
 
@@ -36,13 +44,17 @@ class Twicenest extends StatefulWidget {
 }
 
 class _TwicenestState extends State<Twicenest> {
-  List<String?> list = [];
+  List<String?> list = []; // download url list
 
-  Completer<WebViewController> _controller = Completer<WebViewController>();
+  Completer<WebViewController> _controller =
+      Completer<WebViewController>(); //webview controller
 
-  static int progress = 0;
+  static int progress = 0; //download progress
 
-  ReceivePort _receivePort = ReceivePort();
+  ReceivePort _receivePort = ReceivePort(); //init backgroun download
+
+  FirebaseMessaging messaging =
+      FirebaseMessaging.instance; //firebase message init
 
   static downloadingCallback(id, status, progress) {
     ///Looking up for a send port
@@ -57,8 +69,21 @@ class _TwicenestState extends State<Twicenest> {
     // ignore: todo
     // TODO: implement initState
     loadbool().then((value) {});
+    acceptpermission().then((value) async {
+      final token = await messaging.getToken() as String;
+      saveTokenToDatabase(token);
+    });
 
     super.initState();
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
@@ -77,7 +102,6 @@ class _TwicenestState extends State<Twicenest> {
         signal2();
       }
     });
-
     FlutterDownloader.registerCallback(downloadingCallback);
   }
 
@@ -89,6 +113,12 @@ class _TwicenestState extends State<Twicenest> {
       WidgetsBinding.instance?.addPostFrameCallback((_) => dialogging(context));
       pref.setBool('permisson', true);
     }
+  }
+
+  Future<void> firebaseCloudMessagingListeners() async {
+    messaging.getToken().then((token) {
+      saveTokenToDatabase(token as String);
+    });
   }
 
   @override
@@ -103,6 +133,23 @@ class _TwicenestState extends State<Twicenest> {
               child: WebView(
                   initialUrl: 'https://www.twicenest.com/board',
                   javascriptMode: JavascriptMode.unrestricted,
+                  navigationDelegate: (NavigationRequest request) {
+                    if (request.url.startsWith('http://')) {
+                      print('blocking navigation to $request}');
+                      print(request.url);
+
+                      return NavigationDecision.prevent;
+                    }
+                    // if (request.url.startsWith('https://www.twicenest.com') ==
+                    //         false &&
+                    //     request.url.startsWith('https://www.twitter.com') ==
+                    //         false &&
+                    //     request.url.startsWith('https://www.instagram.com') ==
+                    //         false) {
+                    //   return NavigationDecision.prevent;
+                    // }
+                    return NavigationDecision.navigate;
+                  },
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller.complete(webViewController);
                     _controller.future.then((value) =>
