@@ -4,7 +4,7 @@
 <dict>
 	<key>&lt;key&gt;NSPhotoLibraryUsageDescription&lt;/key&gt;
 &lt;string&gt;App needs access to photo lib for profile images&lt;/string&gt;</key>
-	<string></string>
+	<string>To use download function and move downloaded file to photos, This app requires access to the photo library.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
@@ -18,11 +18,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
@@ -34,16 +34,14 @@
 		<key>NSAllowsArbitraryLoadsInWebContent</key>
 		<true/>
 	</dict>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Always and when in use!</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Can I have location always?</string>
-	<key>NSLocationUsageDescription</key>
-	<string>Older devices need location.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Need location when in use</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<string>NO</string>
+	<key>NSCameraUsageDescription</key>
+	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. And this data will be used only to take photo in this app</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app requires access to the photo library.</string>
+	<string>To use download function and move downloaded file to photos, This app requires access to the photo library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. And this data will be used only to take video in this app</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

@@ -83,29 +83,44 @@ void makeRequest(_url) async {
         .replaceAll('.', '-');
     final docu2 =
         document.getElementsByTagName('article')[0].innerHtml.toString();
-    var srcNum = 'src'.allMatches(docu2).length;
+    var srcNum = 'img src'.allMatches(docu2).length;
     final usercol = FirebaseFirestore.instance
         .collection('filepath')
         .doc(datedocu)
         .collection('filepath');
+    if (srcNum == 0) {
+      srcNum = 'img alt'.allMatches(docu2).length;
+    }
+    try {
+      for (int i = 0; i < srcNum; i++) {
+        final e = docu
+            .map((e) => e.getElementsByTagName("img")[i].attributes['src'])
+            .toString();
 
-    for (int i = 0; i < srcNum; i++) {
-      final e = docu
-          .map((e) => e.getElementsByTagName("img")[i].attributes['src'])
-          .toString();
-
-      if (e.contains('files/')) {
-        String filename =
-            e.substring(e.lastIndexOf("/") + 1).replaceAll(')', ''); //파일이름 찾기
-        var documentsnapshot =
-            await usercol.doc(filename).get(); // firebase setting
-        String imgurl = 'https://www.twicenestcontent.tk/images/' +
-            documentsnapshot.data()!.values.toString(); //firebase에서 경로 찾고 넣기
-        list.insert(i, imgurl.replaceAll('(', '').replaceAll(')', ''));
-      } else {
-        list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
+        if (e.contains('files/')) {
+          String filename =
+              e.substring(e.lastIndexOf("/") + 1).replaceAll(')', ''); //파일이름 찾기
+          var documentsnapshot =
+              await usercol.doc(filename).get(); // firebase setting
+          String imgurl = 'https://www.twicenestcontent.tk/images/' +
+              documentsnapshot.data()!.values.toString(); //firebase에서 경로 찾고 넣기
+          list.insert(i, imgurl.replaceAll('(', '').replaceAll(')', ''));
+        } else {
+          list.insert(i, e.replaceAll('(', '').replaceAll(')', ''));
+        }
+      }
+    } catch (e) {
+      for (int i = 0; i < srcNum; i++) {
+        final e = docu
+            .map((e) => e.getElementsByTagName("img")[i].attributes['src'])
+            .toString();
+        list.insert(
+            i,
+            'https://www.twicenest.com' +
+                e.replaceAll('(', '').replaceAll(')', ''));
       }
     }
+
     if (list.contains('/static/blank.gif')) {
       filenum = srcNum - 1;
     } else {
@@ -133,7 +148,6 @@ void makeRequest(_url) async {
           print('next download start');
           downloadfile(imgurl, filename);
           while (sign2 != 1) {
-            print('wait for 500milliseconds');
             await Future.delayed(Duration(milliseconds: 500));
           }
         } else {
@@ -146,7 +160,6 @@ void makeRequest(_url) async {
           print('next download start');
           downloadfile(imgurl, filename);
           while (sign2 != 1) {
-            print('wait for 500milliseconds');
             await Future.delayed(Duration(milliseconds: 500));
           }
         }
