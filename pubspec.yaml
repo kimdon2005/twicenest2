@@ -43,6 +43,7 @@ dependencies:
   firebase_messaging: ^11.2.6
   flutter_local_notifications: ^9.3.2
   firebase_auth: ^3.3.7
+  device_calendar: ^4.2.0
 
 
   

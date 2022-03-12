@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -13,6 +14,7 @@ import 'download.dart';
 import 'first_terms.dart';
 import 'secondpage.dart';
 import 'notification.dart';
+import 'calendar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -23,6 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> main() async {
+  tz.initializeTimeZones();
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
   await Firebase.initializeApp();
@@ -44,6 +47,10 @@ class Twicenest extends StatefulWidget {
 }
 
 class _TwicenestState extends State<Twicenest> {
+  bool visible = false;
+
+  int count = 0;
+
   List<String?> list = []; // download url list
 
   Completer<WebViewController> _controller =
@@ -96,7 +103,7 @@ class _TwicenestState extends State<Twicenest> {
       setState(() {
         progress = message[2];
       });
-      print(progress);
+      // print(progress);
       if (progress == 100) {
         signal();
         signal2();
@@ -107,7 +114,7 @@ class _TwicenestState extends State<Twicenest> {
 
   loadbool() async {
     final pref = await SharedPreferences.getInstance();
-    print(pref.getBool('permisson'));
+    // print(pref.getBool('permisson'));
     if (pref.getBool('permisson') == true) {
     } else {
       WidgetsBinding.instance?.addPostFrameCallback((_) => dialogging(context));
@@ -134,20 +141,32 @@ class _TwicenestState extends State<Twicenest> {
                   initialUrl: 'https://www.twicenest.com/board',
                   javascriptMode: JavascriptMode.unrestricted,
                   navigationDelegate: (NavigationRequest request) {
-                    if (request.url.startsWith('http://')) {
-                      print('blocking navigation to $request}');
-                      print(request.url);
-
-                      return NavigationDecision.prevent;
+                    if (request.url
+                            .startsWith('https://www.twicenest.com/schedule') ==
+                        true) {
+                      // print('true!!');
+                      setState(() {
+                        visible = true;
+                        if (Platform.isIOS) {
+                          count = 0;
+                        }
+                      });
+                    } else {
+                      // print('false!!');
+                      setState(() {
+                        if (Platform.isIOS) {
+                          count++;
+                          if (count >= 3) {
+                            visible = false;
+                          }
+                        } else {
+                          setState(() {
+                            visible = false;
+                          });
+                        }
+                      });
                     }
-                    // if (request.url.startsWith('https://www.twicenest.com') ==
-                    //         false &&
-                    //     request.url.startsWith('https://www.twitter.com') ==
-                    //         false &&
-                    //     request.url.startsWith('https://www.instagram.com') ==
-                    //         false) {
-                    //   return NavigationDecision.prevent;
-                    // }
+
                     return NavigationDecision.navigate;
                   },
                   onWebViewCreated: (WebViewController webViewController) {
@@ -171,6 +190,7 @@ class _TwicenestState extends State<Twicenest> {
               ],
             ),
           ),
+          floatingActionButton: schdule(),
         ),
         onWillPop: () => onWillPop());
   }
@@ -205,9 +225,6 @@ class _TwicenestState extends State<Twicenest> {
             onPressed: () async {
               var url = await controller.data!.currentUrl();
               try {
-                // downloadfile(
-                //     'https://www.drive.google.com/uc?export=download&id=1SWQJmyY2KKG22Lax-H0V5Qc5JksASeA9',
-                //     'test.gif');
                 makeRequest(url);
                 final snackBar = SnackBar(
                   content: const Text(
@@ -284,6 +301,34 @@ class _TwicenestState extends State<Twicenest> {
       },
       icon: Icon(Icons.download_done_rounded),
       tooltip: '다운로드된 파일 보기',
+    );
+  }
+
+  Widget schdule() {
+    return FutureBuilder<WebViewController>(
+      future: _controller.future,
+      builder:
+          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
+        if (controller.hasData) {
+          return AnimatedOpacity(
+            child: FloatingActionButton(
+              backgroundColor: Color.fromRGBO(252, 237, 241, 10),
+              foregroundColor: Colors.black45,
+              child: Icon(Icons.event_available_rounded),
+              tooltip: "스케줄을 캘린더로 복사!!",
+              onPressed: !visible
+                  ? null
+                  : () async {
+                      var url = await controller.data!.currentUrl();
+                      setCurentLocation(url);
+                    },
+            ),
+            duration: Duration(milliseconds: 100),
+            opacity: visible ? 1 : 0,
+          );
+        }
+        return Container();
+      },
     );
   }
 }

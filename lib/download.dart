@@ -40,7 +40,7 @@ Future<void> downloadfile(___url, filename) async {
   } else if (Platform.isAndroid) {
     final dir = await getExternalStorageDirectory();
     var _localPath = dir!.path;
-    print(_localPath);
+    // print(_localPath);
     final savedDir = Directory(_localPath);
     final status = await Permission.storage.request();
     downloadedfile.add(_localPath + '/' + filename);
@@ -127,7 +127,7 @@ void makeRequest(_url) async {
       filenum = srcNum;
     }
     list.remove('/static/blank.gif');
-    print(list);
+    // print(list);
     if (list[0] is String) {
       print('this var is string');
     }
@@ -145,7 +145,7 @@ void makeRequest(_url) async {
                   .replaceAll('https://', '')
                   .replaceAll('/', '') +
               '.gif';
-          print('next download start');
+          // print('next download start');
           downloadfile(imgurl, filename);
           while (sign2 != 1) {
             await Future.delayed(Duration(milliseconds: 500));
@@ -157,7 +157,7 @@ void makeRequest(_url) async {
               .replaceAll('https://', '')
               .replaceAll('/', '');
           await Future.delayed(Duration(seconds: 1));
-          print('next download start');
+          // print('next download start');
           downloadfile(imgurl, filename);
           while (sign2 != 1) {
             await Future.delayed(Duration(milliseconds: 500));
@@ -200,10 +200,10 @@ Future<void> savefiletogallery() async {
 
 void signal() {
   sign = sign + 1;
-  print('sign = $sign');
+  // print('sign = $sign');
   if (sign >= 2 * filenum - 1) {
     toast('모든 컨텐츠가 다운로드 되었습니다!!');
-    print('download finished');
+    // print('download finished');
   }
 }
 

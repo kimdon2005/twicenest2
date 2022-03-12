@@ -37,11 +37,13 @@
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
 	<key>NSCameraUsageDescription</key>
-	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. And this data will be used only to take photo in this app</string>
+	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. For example, this data will be used to take photo in this function</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>To use download function and move downloaded file to photos, This app requires access to the photo library.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. And this data will be used only to take video in this app</string>
+	<string>To use post funcitons with photos with &apos;take photo or video&apos; option , this app requires access to the camera usage. For example,  this data will be used to take video in this function</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This data will be used to add schedule to user&apos;s device calendar, so this app requires calendar access. For example, this date will be used to provide event update function</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
