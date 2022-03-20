@@ -2,19 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:twicenest2/mainfeature/grid.dart';
+import 'package:twicenest2/webview/login.dart';
+import 'package:twicenest2/webview/write.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'download.dart';
+import 'functions/download.dart';
 import 'first_terms.dart';
 import 'secondpage.dart';
-import 'notification.dart';
-import 'calendar.dart';
+import 'functions/notification.dart';
+import 'functions/calendar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -132,49 +136,106 @@ class _TwicenestState extends State<Twicenest> {
   Widget build(BuildContext context) {
     return WillPopScope(
         child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Container(
-            color: Color.fromRGBO(248, 247, 245, 10),
-            child: SafeArea(
-              top: true,
-              child: WebView(
-                  initialUrl: 'https://www.twicenest.com/board',
-                  javascriptMode: JavascriptMode.unrestricted,
-                  navigationDelegate: (NavigationRequest request) {
-                    if (request.url
-                            .startsWith('https://www.twicenest.com/schedule') ==
-                        true) {
-                      // print('true!!');
-                      setState(() {
-                        visible = true;
-                        if (Platform.isIOS) {
-                          count = 0;
-                        }
-                      });
-                    } else {
-                      // print('false!!');
-                      setState(() {
-                        if (Platform.isIOS) {
-                          count++;
-                          if (count >= 3) {
-                            visible = false;
-                          }
-                        } else {
-                          setState(() {
-                            visible = false;
-                          });
-                        }
-                      });
-                    }
-
-                    return NavigationDecision.navigate;
-                  },
-                  onWebViewCreated: (WebViewController webViewController) {
-                    _controller.complete(webViewController);
-                    _controller.future.then((value) =>
-                        _controller = value as Completer<WebViewController>);
-                  }),
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50.0),
+            child: AppBar(
+              backgroundColor: Color.fromRGBO(248, 247, 245, 10),
+              title: Center(
+                child: Text(
+                  'TWICENEST',
+                  style: TextStyle(
+                      fontFamily: 'human',
+                      color: Colors.black,
+                      letterSpacing: 0.8,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 10),
+                ),
+              ),
+              leading: IconButton(
+                  icon: FaIcon(
+                    FontAwesomeIcons.bars,
+                    color: Colors.black,
+                  ),
+                  onPressed: null),
+              actions: [
+                IconButton(
+                    icon: FaIcon(
+                      FontAwesomeIcons.lock,
+                      size: 18,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const Loginwebview()),
+                      );
+                    }),
+                IconButton(
+                    icon: Icon(
+                      Icons.person,
+                      color: Colors.black,
+                    ),
+                    onPressed: null),
+              ],
             ),
+          ),
+          resizeToAvoidBottomInset: false,
+          body: Column(
+            children: [
+              blank(0, 20),
+              Row(
+                //first layer
+                children: <Widget>[
+                  blank(21, 0),
+                  InkWell(
+                    child: Text(
+                      '트둥닷컴',
+                      style: TextStyle(fontFamily: 'Jua', fontSize: 23),
+                    ),
+                    onTap: () {
+                      print('home');
+                    },
+                  ),
+                  blank(10, 0),
+                  OutlinedButton(
+                    onPressed: () {
+                      print('추천글');
+                    },
+                    child: Text(
+                      '추천글',
+                      style: TextStyle(fontSize: 11, color: Colors.black54),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                        fixedSize: const Size(20, 10),
+                        primary: Colors.blueGrey,
+                        backgroundColor: Colors.white24,
+                        textStyle: const TextStyle(fontSize: 24)),
+                  ),
+                  Spacer(),
+                  OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Writewebview()),
+                        );
+                      },
+                      child: Text(
+                        '🖊️쓰기',
+                        style: TextStyle(fontSize: 11, color: Colors.black54),
+                      )),
+                  blank(10, null)
+                ],
+              ), // first layer
+              blank(null, 20),
+              tablelist(),
+              secondtable(),
+              //grid view second layer
+              // ListView(), //post view third layer
+              Spacer(),
+              Text('pageseletor') //page seletor fourth layer
+            ],
           ),
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
@@ -183,9 +244,9 @@ class _TwicenestState extends State<Twicenest> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                backbutton(),
+                // backbutton(),
                 Spacer(),
-                _buildShowUrlBtn(),
+                // _buildShowUrlBtn(),
                 gosecondpage(),
               ],
             ),
@@ -193,6 +254,13 @@ class _TwicenestState extends State<Twicenest> {
           floatingActionButton: schdule(),
         ),
         onWillPop: () => onWillPop());
+  }
+
+  blank(double? width, double? heith) {
+    return SizedBox(
+      width: width,
+      height: heith,
+    );
   }
 
   late DateTime backbuttonpressedTime;

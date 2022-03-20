@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-import 'download.dart';
+import 'functions/download.dart';
 
 class Secondpage extends StatelessWidget {
   const Secondpage({Key? key}) : super(key: key);
