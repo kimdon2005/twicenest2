@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import '../functions//download.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 int i = 0;
@@ -16,34 +13,38 @@ class Loginwebview extends StatelessWidget {
       top: true,
       child: WebView(
           initialUrl: 'https://www.twicenest.com/index/login',
-          javascriptMode: JavascriptMode.unrestricted,
+          javascriptMode: JavascriptMode.disabled,
           navigationDelegate: (NavigationRequest request) {
-            if (request.url
-                    .startsWith('https://www.twicenest.com/index/login') ==
-                false) {
-              if (Platform.isIOS) {
-                i++;
-                print(i);
-                print(request.url);
+            // if (request.url ==
+            //     'https://platform.twitter.com/widgets/widget_iframe.a58e82e150afc25eb5372dd55a98b778.html?origin=https%3A%2F%2Fwww.twicenest.com') {
+            //   Navigator.pop(context);
+            // }
+            // if (request.url
+            //         .startsWith('https://www.twicenest.com/index/login') ==
+            //     false) {
+            //   if (Platform.isIOS) {
+            //     i++;
 
-                if (i >= 7) {
-                  i = 0;
-                  toast('로그인 상태입니다!!');
-                  Future.delayed(Duration(seconds: 1));
-                  Navigator.pop(context);
-                  return NavigationDecision.prevent;
-                }
-              } else {
-                toast('로그인 상태입니다!!');
-                Future.delayed(Duration(seconds: 1));
-                Navigator.pop(context);
-                return NavigationDecision.prevent;
-              }
-            } else {
-              // print('false!!');
+            //     if (i >= 15) {
+            //       print(i);
 
-            }
+            //       i = 0;
+            //       toast('로그인 상태입니다!!');
+            //       Future.delayed(Duration(seconds: 1));
+            //       Navigator.pop(context);
+            //       return NavigationDecision.prevent;
+            //     }
+            //   } else {
+            //     toast('로그인 상태입니다!!');
+            //     Future.delayed(Duration(seconds: 1));
+            //     Navigator.pop(context);
+            //     return NavigationDecision.prevent;
+            //   }
+            // } else {
+            //   // print('false!!');
 
+            // }
+            print(request.url);
             return NavigationDecision.navigate;
           }),
     ));

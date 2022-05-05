@@ -45,6 +45,8 @@ dependencies:
   firebase_auth: ^3.3.7
   device_calendar: ^4.2.0
   font_awesome_flutter: ^10.0.0
+  google_fonts: ^2.3.1
+  provider: ^6.0.2
 
 
   
@@ -95,6 +97,19 @@ flutter:
     - family: CustomIcons
       fonts:
         - asset: fonts/MyFlutterApp.ttf
+    - family: nanum
+      fonts:
+        - asset: fonts/NanumGothic.ttf
+          weight: 300
+        - asset: fonts/NanumGothicBold.ttf
+          weight: 400
+
+        - asset: fonts/NanumGothicExtraBold.ttf
+          weight: 500
+        - asset: fonts/NanumGothicLight.ttf
+          weight: 200
+
+        
 
 
   #   - family: Trajan Pro

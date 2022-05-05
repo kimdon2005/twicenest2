@@ -11,18 +11,18 @@ import 'package:html/dom.dart' as dom;
 import 'package:add_to_gallery/add_to_gallery.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-List downloadedfile = [];
 int sign = 0;
 int sign2 = 0;
 int filenum = 0;
 
-Future<void> downloadfile(___url, filename) async {
+Future<void> downloadfile(
+    String ___url, String filename, downloadedlist) async {
   if (Platform.isIOS) {
     final dir = await getApplicationDocumentsDirectory();
     var _localPath = dir.path;
     final savedDir = Directory(_localPath);
     final status = await Permission.storage.request();
-    downloadedfile.add(_localPath + '/' + filename);
+    downloadedlist.adddownloadedfile(_localPath + '/' + filename);
     if (status.isGranted) {
       await savedDir.create(recursive: true).then((value) async {
         await FlutterDownloader.enqueue(
@@ -43,7 +43,7 @@ Future<void> downloadfile(___url, filename) async {
     // print(_localPath);
     final savedDir = Directory(_localPath);
     final status = await Permission.storage.request();
-    downloadedfile.add(_localPath + '/' + filename);
+    downloadedlist.adddownloadedfile(_localPath + '/' + filename);
     if (status.isGranted) {
       await savedDir.create(recursive: true).then((value) async {
         await FlutterDownloader.enqueue(
@@ -64,7 +64,7 @@ Future<void> downloadfile(___url, filename) async {
   //From path_provider package
 }
 
-void makeRequest(_url) async {
+void makeRequest(_url, downloadedlist) async {
   List<String?> list = [];
   sign = 0;
   filenum = 0;
@@ -121,16 +121,8 @@ void makeRequest(_url) async {
       }
     }
 
-    if (list.contains('/static/blank.gif')) {
-      filenum = srcNum - 1;
-    } else {
-      filenum = srcNum;
-    }
-    list.remove('/static/blank.gif');
-    // print(list);
-    if (list[0] is String) {
-      print('this var is string');
-    }
+    list.remove('https://www.twicenest.com/static/blank.gif');
+    filenum = list.length;
     for (int i = 0; i < filenum; i++) {
       String? imgurl = list[i];
       if (imgurl != null) {
@@ -146,7 +138,7 @@ void makeRequest(_url) async {
                   .replaceAll('/', '') +
               '.gif';
           // print('next download start');
-          downloadfile(imgurl, filename);
+          downloadfile(imgurl, filename, downloadedlist);
           while (sign2 != 1) {
             await Future.delayed(Duration(milliseconds: 500));
           }
@@ -156,12 +148,12 @@ void makeRequest(_url) async {
               .substring(length - 15)
               .replaceAll('https://', '')
               .replaceAll('/', '');
-          await Future.delayed(Duration(seconds: 1));
           // print('next download start');
-          downloadfile(imgurl, filename);
-          while (sign2 != 1) {
-            await Future.delayed(Duration(milliseconds: 500));
-          }
+          downloadfile(imgurl, filename, downloadedlist);
+          // while (sign2 != 1) {
+          //   print('wait');
+          //   await Future.delayed(Duration(milliseconds: 500));
+          // }
         }
       } else {
         print('error');
@@ -170,14 +162,48 @@ void makeRequest(_url) async {
   }
 }
 
-Future<void> savefiletogallery() async {
-  int length = downloadedfile.length;
+Future<void> savefiletogallery(downloadedlist) async {
+  List filelist = downloadedlist.list;
+  int length = filelist.length;
   if (length != 0) {
     for (int i = 0; i < length; i++) {
+      // try {
+      //   // iOS
+      //   if (Platform.isIOS) {
+      //     final status = await Permission.photos.request();
+      //     if (status.isGranted) {
+      //       File file = await AddToGallery.addToGallery(
+      //         originalFile: File(filelist[i]),
+      //         albumName: '둥닷앱',
+      //         deleteOriginalFile: true,
+      //       );
+      //       print("Savd to gallery with Path: ${file.path}");
+      //     } else {
+      //       throw ('permisson required');
+      //     }
+      //   }
+
+      //   // Android (10 and below)
+      //   if (Platform.isAndroid) {
+      //     final status = await Permission.storage.request();
+      //     if (status.isGranted) {
+      //       File file = await AddToGallery.addToGallery(
+      //         originalFile: File(filelist[i]),
+      //         albumName: '둥닷앱',
+      //         deleteOriginalFile: true,
+      //       );
+      //       print("Savd to gallery with Path: ${file.path}");
+      //     } else {
+      //       throw ('permisson required');
+      //     }
+      //   }
+      // } catch (e) {
+      //   print("Error: $e");
+      // }
       try {
         // iOS
         if (!await Permission.photos.request().isGranted) {
-          throw ('Permission Required');
+          throw ('Permission Required?');
         }
         // Android (10 and below)
         if (!await Permission.storage.request().isGranted) {
@@ -185,7 +211,7 @@ Future<void> savefiletogallery() async {
         }
         // Add to the gallery
         File file = await AddToGallery.addToGallery(
-          originalFile: File(downloadedfile[i]),
+          originalFile: File(filelist[i]),
           albumName: '둥닷앱',
           deleteOriginalFile: true,
         );
@@ -194,7 +220,7 @@ Future<void> savefiletogallery() async {
         print("Error: $e");
       }
     }
-    downloadedfile.clear();
+    downloadedlist.clear();
   }
 }
 

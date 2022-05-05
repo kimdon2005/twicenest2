@@ -3,13 +3,19 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:twicenest2/mainfeature/grid.dart';
+import 'package:twicenest2/provider/downloaded.dart';
+import 'package:twicenest2/provider/tabcounter.dart';
+import 'package:twicenest2/src/grid.dart';
+import 'package:twicenest2/src/postlist.dart';
+import 'package:twicenest2/provider/countprovider.dart';
+import 'package:twicenest2/src/tabselecter.dart';
 import 'package:twicenest2/webview/login.dart';
 import 'package:twicenest2/webview/write.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -20,6 +26,8 @@ import 'secondpage.dart';
 import 'functions/notification.dart';
 import 'functions/calendar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+
+import 'src/drawer.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -39,7 +47,20 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: Twicenest());
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (_) => Downloaded(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => Tabcounter(),
+          ),
+          ChangeNotifierProvider(
+            create: (_) => Tabchanger(),
+          ),
+        ],
+        child:
+            MaterialApp(debugShowCheckedModeBanner: false, home: Twicenest()));
   }
 }
 
@@ -132,13 +153,29 @@ class _TwicenestState extends State<Twicenest> {
     });
   }
 
+  static const routeName = '/extractArguments';
+
   @override
   Widget build(BuildContext context) {
+    final tabcount = Provider.of<Tabcounter>(context, listen: false);
+    final changer = Provider.of<Tabchanger>(context, listen: false);
     return WillPopScope(
         child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(50.0),
-            child: AppBar(
+          resizeToAvoidBottomInset: false,
+          body: CustomScrollView(slivers: [
+            SliverAppBar(
+              iconTheme: IconThemeData(color: Colors.black),
+              bottom: PreferredSize(
+                  child: Container(
+                    color: Colors.black45,
+                    height: 0.5,
+                  ),
+                  preferredSize: Size.fromHeight(4.0)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(10),
+                ),
+              ),
               backgroundColor: Color.fromRGBO(248, 247, 245, 10),
               title: Center(
                 child: Text(
@@ -148,15 +185,9 @@ class _TwicenestState extends State<Twicenest> {
                       color: Colors.black,
                       letterSpacing: 0.8,
                       fontWeight: FontWeight.w700,
-                      fontSize: 10),
+                      fontSize: 11),
                 ),
               ),
-              leading: IconButton(
-                  icon: FaIcon(
-                    FontAwesomeIcons.bars,
-                    color: Colors.black,
-                  ),
-                  onPressed: null),
               actions: [
                 IconButton(
                     icon: FaIcon(
@@ -179,64 +210,84 @@ class _TwicenestState extends State<Twicenest> {
                     onPressed: null),
               ],
             ),
-          ),
-          resizeToAvoidBottomInset: false,
-          body: Column(
-            children: [
-              blank(0, 20),
-              Row(
-                //first layer
-                children: <Widget>[
-                  blank(21, 0),
-                  InkWell(
-                    child: Text(
-                      '트둥닷컴',
-                      style: TextStyle(fontFamily: 'Jua', fontSize: 23),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                height: 100,
+                child: Column(
+                  children: [
+                    IntrinsicHeight(
+                      child: Column(
+                        children: [
+                          blank(0, 20),
+                          Row(
+                            //first layer
+                            children: <Widget>[
+                              blank(21, 0),
+                              InkWell(
+                                child: Text(
+                                  '트둥닷컴',
+                                  style: TextStyle(
+                                      fontFamily: 'Jua', fontSize: 23),
+                                ),
+                                onTap: () {
+                                  tabcount.settabnum(1);
+                                  changer.changetab(
+                                      'https://www.twicenest.com/board');
+                                },
+                              ),
+                              blank(10, 0),
+                              OutlinedButton(
+                                onPressed: () {
+                                  tabcount.settabnum(1);
+                                  changer.changetab(
+                                      'https://www.twicenest.com/recommend');
+                                },
+                                child: Text(
+                                  '추천글',
+                                  style: TextStyle(
+                                      fontSize: 11, color: Colors.black54),
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                    fixedSize: const Size(20, 10),
+                                    primary: Colors.blueGrey,
+                                    backgroundColor: Colors.white24,
+                                    textStyle: const TextStyle(fontSize: 24)),
+                              ),
+                              Spacer(),
+                              OutlinedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const Writewebview()),
+                                    );
+                                  },
+                                  child: Text(
+                                    '🖊️쓰기',
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.black54),
+                                  )),
+                              blank(10, null)
+                            ],
+                          ), // first layer
+                        ],
+                      ),
                     ),
-                    onTap: () {
-                      print('home');
-                    },
-                  ),
-                  blank(10, 0),
-                  OutlinedButton(
-                    onPressed: () {
-                      print('추천글');
-                    },
-                    child: Text(
-                      '추천글',
-                      style: TextStyle(fontSize: 11, color: Colors.black54),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                        fixedSize: const Size(20, 10),
-                        primary: Colors.blueGrey,
-                        backgroundColor: Colors.white24,
-                        textStyle: const TextStyle(fontSize: 24)),
-                  ),
-                  Spacer(),
-                  OutlinedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Writewebview()),
-                        );
-                      },
-                      child: Text(
-                        '🖊️쓰기',
-                        style: TextStyle(fontSize: 11, color: Colors.black54),
-                      )),
-                  blank(10, null)
-                ],
-              ), // first layer
-              blank(null, 20),
-              tablelist(),
-              secondtable(),
-              //grid view second layer
-              // ListView(), //post view third layer
-              Spacer(),
-              Text('pageseletor') //page seletor fourth layer
-            ],
-          ),
+                  ],
+                ),
+              ),
+            ),
+            gridview(changer, tabcount),
+            SliverToBoxAdapter(
+              child: blank(null, 10),
+            ),
+            postlist(Provider.of<Tabchanger>(context).url),
+            SliverToBoxAdapter(
+              child: blank(null, 10),
+            ),
+            tabselecter(changer, Provider.of<Tabcounter>(context)),
+          ]),
           bottomNavigationBar: BottomAppBar(
             shape: CircularNotchedRectangle(),
             notchMargin: 4.0,
@@ -252,6 +303,7 @@ class _TwicenestState extends State<Twicenest> {
             ),
           ),
           floatingActionButton: schdule(),
+          drawer: drawer(context),
         ),
         onWillPop: () => onWillPop());
   }
@@ -281,64 +333,6 @@ class _TwicenestState extends State<Twicenest> {
       return false;
     }
     return true;
-  }
-
-  Widget _buildShowUrlBtn() {
-    return FutureBuilder<WebViewController>(
-      future: _controller.future,
-      builder:
-          (BuildContext context, AsyncSnapshot<WebViewController> controller) {
-        if (controller.hasData) {
-          return IconButton(
-            onPressed: () async {
-              var url = await controller.data!.currentUrl();
-              try {
-                makeRequest(url);
-                final snackBar = SnackBar(
-                  content: const Text(
-                    '컨텐츠를 다운로드 중!!',
-                    style: TextStyle(color: Colors.black54, fontFamily: 'Jua'),
-                  ),
-                  duration: new Duration(seconds: 1),
-                  backgroundColor: Color.fromRGBO(252, 237, 241, 10),
-                  elevation: 6.0,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                  ),
-                );
-
-                // Find the ScaffoldMessenger in the widget tree
-                // and use it to show a SnackBar.
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              } catch (e) {
-                final snackBar = SnackBar(
-                  content: const Text(
-                    '다운할 컨텐츠가 없어요!!',
-                    style: TextStyle(color: Colors.black54, fontFamily: 'Jua'),
-                  ),
-                  duration: new Duration(seconds: 1),
-                  backgroundColor: Color.fromRGBO(252, 237, 241, 10),
-                  elevation: 6.0,
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                  ),
-                );
-
-                // Find the ScaffoldMessenger in the widget tree
-                // and use it to show a SnackBar.
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              }
-            },
-            icon: Icon(Icons.download_rounded),
-            tooltip: '페이지의 파일 다운로드',
-            autofocus: true,
-          );
-        }
-        return Container();
-      },
-    );
   }
 
   Widget backbutton() {
@@ -399,4 +393,11 @@ class _TwicenestState extends State<Twicenest> {
       },
     );
   }
+}
+
+class ScreenArguments {
+  final String _url;
+  String get url => _url;
+
+  ScreenArguments(this._url);
 }

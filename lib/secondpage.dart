@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:twicenest2/provider/downloaded.dart';
 
 import 'functions/download.dart';
 
@@ -9,6 +11,7 @@ class Secondpage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final downloadedlist = Provider.of<Downloaded>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -17,10 +20,10 @@ class Secondpage extends StatelessWidget {
         ),
         backgroundColor: Color.fromRGBO(252, 237, 241, 10),
       ),
-      body: filelist(),
+      body: filelist(downloadedlist),
       floatingActionButton: FloatingActionButton(
           onPressed: () {
-            savefiletogallery();
+            savefiletogallery(downloadedlist);
             if (Platform.isIOS) {
               final snackBar = SnackBar(
                 content: const Text(
@@ -78,8 +81,10 @@ class Secondpage extends StatelessWidget {
     );
   }
 
-  Widget filelist() {
-    if (downloadedfile.length == 0) {
+  Widget filelist(downloadedlist) {
+    List down_list = downloadedlist.list;
+    print(down_list);
+    if (down_list.length == 0) {
       return Center(
         child: Text(
           '다운 받은 파일이 없어요!!',
@@ -94,8 +99,8 @@ class Secondpage extends StatelessWidget {
           crossAxisSpacing: 10.0,
           mainAxisSpacing: 10.0,
           crossAxisCount: 2,
-          children: List.generate(downloadedfile.length, (index) {
-            return Center(child: Image.file(File(downloadedfile[index])));
+          children: List.generate(down_list.length, (index) {
+            return Center(child: Image.file(File(down_list[index])));
           }),
         );
       } catch (e) {
@@ -108,8 +113,8 @@ class Secondpage extends StatelessWidget {
         crossAxisSpacing: 10.0,
         mainAxisSpacing: 10.0,
         crossAxisCount: 2,
-        children: List.generate(downloadedfile.length, (index) {
-          return Center(child: Image.file(File(downloadedfile[index])));
+        children: List.generate(down_list.length, (index) {
+          return Center(child: Image.file(File(down_list[index])));
         }),
       );
     }

@@ -21,26 +21,21 @@ class Writewebview extends StatelessWidget {
                         .startsWith('https://www.twicenest.com/board/write') ==
                     false) {
                   if (Platform.isIOS) {
+                    print(request.url);
                     i++;
-                    print(i);
 
-                    if (i >= 3) {
-                      print(request.url);
+                    if (i >= 4) {
                       i = 0;
                       toast('글을 작성하였습니다!!');
                       Navigator.pop(context);
                       return NavigationDecision.prevent;
                     }
                   } else {
-                    print(request.url);
                     toast('글을 작성하였습니다!!');
                     Navigator.pop(context);
                     return NavigationDecision.prevent;
                   }
-                } else {
-                  print('false!!');
-                  print(i);
-                }
+                } else {}
 
                 return NavigationDecision.navigate;
               })),
